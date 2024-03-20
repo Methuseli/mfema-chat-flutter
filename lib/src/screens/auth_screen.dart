@@ -1,6 +1,7 @@
 import 'package:mfema_chat/src/components/primary_button.dart';
 import 'package:mfema_chat/src/constants.dart';
 import 'package:mfema_chat/src/screens/login_screen.dart';
+import 'package:mfema_chat/src/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
 
 class AuthScreen extends StatelessWidget {
@@ -35,7 +36,12 @@ class AuthScreen extends StatelessWidget {
               PrimaryButton(
                 color: Theme.of(context).colorScheme.secondary,
                 text: "Register",
-                press: () {},
+                press: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RegisterScreen(),
+                  ),
+                ),
               ),
               const Spacer(flex: 2),
             ],

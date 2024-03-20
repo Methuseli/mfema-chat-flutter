@@ -13,7 +13,7 @@ class PrimaryButton extends StatelessWidget {
 
   final String text;
   final VoidCallback press;
-  final color;
+  final Color color;
   final EdgeInsets padding;
 
   @override

@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:mfema_chat/src/animations/change_screen_animation.dart';
 import 'package:mfema_chat/src/helper_functions.dart';
 
 import 'package:mfema_chat/src/constants.dart';
-import 'login_content.dart';
+import 'package:mfema_chat/src/screens/login_screen.dart';
+import 'package:mfema_chat/src/screens/registration_screen.dart';
 
 class BottomText extends StatefulWidget {
-  const BottomText({super.key});
+  final Animation<Offset> animation;
+  final String linkText;
+  final String promptText;
+  final String page;
+  const BottomText(
+      {super.key,
+      required this.animation,
+      required this.linkText,
+      required this.promptText,
+      required this.page,});
 
   @override
   State<BottomText> createState() => _BottomTextState();
@@ -15,7 +24,7 @@ class BottomText extends StatefulWidget {
 class _BottomTextState extends State<BottomText> {
   @override
   void initState() {
-    ChangeScreenAnimation.bottomTextAnimation.addStatusListener((status) {
+    widget.animation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         setState(() {});
       }
@@ -27,18 +36,19 @@ class _BottomTextState extends State<BottomText> {
   @override
   Widget build(BuildContext context) {
     return HelperFunctions.wrapWithAnimatedBuilder(
-      animation: ChangeScreenAnimation.bottomTextAnimation,
+      animation: widget.animation,
       child: GestureDetector(
-        onTap: () {
-          if (!ChangeScreenAnimation.isPlaying) {
-            ChangeScreenAnimation.currentScreen == Screens.createAccount
-                ? ChangeScreenAnimation.forward()
-                : ChangeScreenAnimation.reverse();
-
-            ChangeScreenAnimation.currentScreen =
-            Screens.values[1 - ChangeScreenAnimation.currentScreen.index];
-          }
-        },
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context){
+              if(widget.page == 'registration'){
+                return const LoginScreen();
+              }
+              return const RegisterScreen();
+            },
+          ),
+        ),
         behavior: HitTestBehavior.opaque,
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -50,20 +60,14 @@ class _BottomTextState extends State<BottomText> {
               ),
               children: [
                 TextSpan(
-                  text: ChangeScreenAnimation.currentScreen ==
-                      Screens.createAccount
-                      ? 'Already have an account? '
-                      : 'Don\'t have an account? ',
+                  text: widget.promptText,
                   style: const TextStyle(
                     color: kPrimaryColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 TextSpan(
-                  text: ChangeScreenAnimation.currentScreen ==
-                      Screens.createAccount
-                      ? 'Log In'
-                      : 'Sign Up',
+                  text: widget.linkText,
                   style: const TextStyle(
                     color: kSecondaryColor,
                     fontWeight: FontWeight.bold,

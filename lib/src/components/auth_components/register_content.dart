@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:mfema_chat/src/helper_functions.dart';
 
-import 'package:mfema_chat/src/constants.dart';
-import 'package:mfema_chat/src/animations/change_screen_animation.dart';
+import 'package:mfema_chat/src/animations/registration_screen_animation.dart';
 import 'bottom_text.dart';
 import 'top_text.dart';
+import 'form_widgets.dart';
 
 enum Screens {
-  createAccount,
-  welcomeBack,
+  personalInfo,
+  passwordConfirm,
+  profileInfo,
 }
 
 class RegisterContent extends StatefulWidget {
@@ -21,238 +22,60 @@ class RegisterContent extends StatefulWidget {
 
 class _RegisterContentState extends State<RegisterContent>
     with TickerProviderStateMixin {
-  late final List<Widget> createAccountContent;
-  late final List<Widget> loginContent;
-  late final List<Widget> profileContent;
-  late final List<Widget> passwordContent;
-
-  Widget inputField(String hint, IconData iconData) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
-      child: SizedBox(
-        height: 50,
-        child: Material(
-          elevation: 8,
-          shadowColor: Colors.black87,
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(30),
-          child: TextField(
-            textAlignVertical: TextAlignVertical.bottom,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30),
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: Colors.white,
-              hintText: hint,
-              prefixIcon: Icon(iconData),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget multipleLineInputField(String hint, IconData iconData) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
-      child: SizedBox(
-        height: 50,
-        child: Material(
-          elevation: 8,
-          shadowColor: Colors.black87,
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(30),
-          child: TextField(
-            textAlignVertical: TextAlignVertical.bottom,
-            maxLines: null,
-            minLines: 3,
-            keyboardType: TextInputType.multiline,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30),
-                borderSide: BorderSide.none,
-              ),
-              filled: true,
-              fillColor: Colors.white,
-              hintText: hint,
-              prefixIcon: Icon(iconData),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget fileInput(String hint, IconData iconData, bool multiple) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
-      child: SizedBox(
-        height: 50,
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: const StadiumBorder(),
-            backgroundColor: kContentColorDarkTheme,
-            elevation: 8,
-            shadowColor: Colors.black87,
-          ),
-          child: Wrap(
-            children: <Widget>[
-              Icon(
-                iconData,
-                color: Colors.black38,
-                size: 24.0,
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Text(hint, style: const TextStyle(fontSize: 17, color: Colors.black38))
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget loginButton(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 135, vertical: 16),
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: const StadiumBorder(),
-          backgroundColor: kSecondaryColor,
-          elevation: 8,
-          shadowColor: Colors.black87,
-        ),
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget orDivider() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 130, vertical: 8),
-      child: Row(
-        children: [
-          Flexible(
-            child: Container(
-              height: 1,
-              color: kPrimaryColor,
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'or',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Flexible(
-            child: Container(
-              height: 1,
-              color: kPrimaryColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget logos() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset('assets/images/facebook.png'),
-          const SizedBox(width: 24),
-          Image.asset('assets/images/google.png'),
-        ],
-      ),
-    );
-  }
-
-  Widget forgotPassword() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 110),
-      child: TextButton(
-        onPressed: () {},
-        child: const Text(
-          'Forgot Password?',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: kSecondaryColor,
-          ),
-        ),
-      ),
-    );
-  }
+  late final List<Widget> personalInfoContent;
+  late final List<Widget> profileInfoContent;
+  late final List<Widget> passwordConfirmContent;
 
   @override
   void initState() {
-    createAccountContent = [
-      inputField('First Name', Ionicons.person_outline),
-      inputField('Middle Name', Ionicons.person_outline),
-      inputField('Last Name', Ionicons.person_outline),
-      inputField('Email', Ionicons.mail_outline),
-      inputField('Phone Number', Ionicons.cellular_outline),
-      loginButton('Continue'),
+    personalInfoContent = [
+      inputField('First Name', Ionicons.person_outline, false),
+      inputField('Middle Name', Ionicons.person_outline, false),
+      inputField('Last Name', Ionicons.person_outline, false),
+      inputField('Email', Ionicons.mail_outline, false),
+      inputField('Phone Number', Ionicons.cellular_outline, false),
+      actionButton('Continue'),
       orDivider(),
       logos(),
     ];
 
-    profileContent = [
+    profileInfoContent = [
       multipleLineInputField("Description", Ionicons.book_outline),
       fileInput("Profile Image", Ionicons.cloud_upload_outline, false),
+      actionButton('Register'),
     ];
 
-    passwordContent = [
-      inputField('Password', Ionicons.lock_closed_outline),
-      inputField('Confirm Password', Ionicons.lock_closed_outline),
-      loginButton('Sign Up'),
-      orDivider(),
-      logos(),
+    passwordConfirmContent = [
+      inputField('Password', Ionicons.lock_closed_outline, true),
+      inputField('Confirm Password', Ionicons.lock_closed_outline, true),
+      actionButton('Conitnue'),
     ];
 
-    loginContent = [
-      inputField('Email', Ionicons.mail_outline),
-      inputField('Password', Ionicons.lock_closed_outline),
-      loginButton('Log In'),
-      forgotPassword(),
-    ];
-
-    ChangeScreenAnimation.initialize(
+    RegistrationScreenAnimation.initialize(
       vsync: this,
-      createAccountItems: profileContent.length,
-      loginItems: loginContent.length,
+      personalInfoItems: personalInfoContent.length,
+      profileInfoItems: profileInfoContent.length,
+      passwordConfirmItems: passwordConfirmContent.length,
     );
 
-    for (var i = 0; i < profileContent.length; i++) {
-      profileContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
-        animation: ChangeScreenAnimation.createAccountAnimations[i],
-        child: profileContent[i],
+    for (var i = 0; i < personalInfoContent.length; i++) {
+      personalInfoContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
+        animation: RegistrationScreenAnimation.personalInfoAnimations[i],
+        child: personalInfoContent[i],
       );
     }
 
-    for (var i = 0; i < loginContent.length; i++) {
-      loginContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
-        animation: ChangeScreenAnimation.loginAnimations[i],
-        child: loginContent[i],
+    for (var i = 0; i < profileInfoContent.length; i++) {
+      profileInfoContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
+        animation: RegistrationScreenAnimation.profileInfoAnimations[i],
+        child: profileInfoContent[i],
+      );
+    }
+
+    for (var i = 0; i < passwordConfirmContent.length; i++) {
+      passwordConfirmContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
+        animation: RegistrationScreenAnimation.passwordConfirmAnimations[i],
+        child: passwordConfirmContent[i],
       );
     }
 
@@ -261,45 +84,58 @@ class _RegisterContentState extends State<RegisterContent>
 
   @override
   void dispose() {
-    ChangeScreenAnimation.dispose();
+    RegistrationScreenAnimation.dispose();
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return SingleChildScrollView(
+        child: Column(
       children: [
-        const Positioned(
-          top: 136,
-          left: 24,
-          child: TopText(),
+        Padding(
+          padding: const EdgeInsets.only(top: 100, bottom: 50),
+          child: TopText(
+            animation: RegistrationScreenAnimation.topTextAnimation,
+            pageTitle: 'Create Account',
+          ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 100),
+          padding: const EdgeInsets.only(top: 50),
           child: Stack(
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: profileContent,
+                children: personalInfoContent,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: loginContent,
+                children: passwordConfirmContent,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: profileInfoContent,
               ),
             ],
           ),
         ),
-        const Align(
+        Align(
           alignment: Alignment.bottomCenter,
           child: Padding(
-            padding: EdgeInsets.only(bottom: 50),
-            child: BottomText(),
+            padding: const EdgeInsets.only(bottom: 50),
+            child: BottomText(
+              animation: RegistrationScreenAnimation.bottomTextAnimation,
+              linkText: 'Login',
+              promptText: 'Already have an account? ',
+              page: 'registration',
+            ),
           ),
         ),
       ],
-    );
+    ));
   }
 }

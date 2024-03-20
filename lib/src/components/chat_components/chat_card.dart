@@ -1,4 +1,4 @@
-import 'package:mfema_chat/src/models/Chat.dart';
+import 'package:mfema_chat/src/models/chat.dart';
 import 'package:flutter/material.dart';
 
 import 'package:mfema_chat/src/constants.dart';

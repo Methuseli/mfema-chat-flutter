@@ -5,6 +5,7 @@ import 'package:mfema_chat/src/components/auth_components/center_widget/center_w
 import 'package:mfema_chat/src/components/auth_components/login_content.dart';
 
 class LoginScreen extends StatefulWidget {
+  static const routeName = '/login';
   const LoginScreen({super.key});
 
   @override

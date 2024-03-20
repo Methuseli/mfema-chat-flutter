@@ -1,6 +1,6 @@
 import 'package:mfema_chat/src/components/filled_outline_button.dart';
 import 'package:mfema_chat/src/constants.dart';
-import 'package:mfema_chat/src/models/Chat.dart';
+import 'package:mfema_chat/src/models/chat.dart';
 import 'package:mfema_chat/src/screens/message_screen.dart';
 import 'package:flutter/material.dart';
 

@@ -2,21 +2,18 @@ import 'package:flutter/material.dart';
 
 import 'package:mfema_chat/src/components/auth_components/login_content.dart';
 
-class ChangeScreenAnimation {
-  static late final AnimationController topTextController;
-  static late final Animation<Offset> topTextAnimation;
+class LoginScreenAnimation {
+  static late AnimationController topTextController;
+  static late Animation<Offset> topTextAnimation;
 
-  static late final AnimationController bottomTextController;
-  static late final Animation<Offset> bottomTextAnimation;
-
-  static final List<AnimationController> createAccountControllers = [];
-  static final List<Animation<Offset>> createAccountAnimations = [];
+  static late AnimationController bottomTextController;
+  static late Animation<Offset> bottomTextAnimation;
 
   static final List<AnimationController> loginControllers = [];
   static final List<Animation<Offset>> loginAnimations = [];
 
   static var isPlaying = false;
-  static var currentScreen = Screens.createAccount;
+  static var currentScreen = Screens.login;
 
   static Animation<Offset> _createAnimation({
     required Offset begin,
@@ -33,7 +30,6 @@ class ChangeScreenAnimation {
 
   static void initialize({
     required TickerProvider vsync,
-    required int createAccountItems,
     required int loginItems,
   }) {
     topTextController = AnimationController(
@@ -57,23 +53,7 @@ class ChangeScreenAnimation {
       end: const Offset(0, 1.7),
       parent: bottomTextController,
     );
-
-    for (var i = 0; i < createAccountItems; i++) {
-      createAccountControllers.add(
-        AnimationController(
-          vsync: vsync,
-          duration: const Duration(milliseconds: 200),
-        ),
-      );
-
-      createAccountAnimations.add(
-        _createAnimation(
-          begin: Offset.zero,
-          end: const Offset(-1, 0),
-          parent: createAccountControllers[i],
-        ),
-      );
-    }
+    print('Log in items $loginItems');
 
     for (var i = 0; i < loginItems; i++) {
       loginControllers.add(
@@ -85,8 +65,8 @@ class ChangeScreenAnimation {
 
       loginAnimations.add(
         _createAnimation(
-          begin: const Offset(1, 0),
-          end: Offset.zero,
+          begin: Offset.zero,
+          end: const Offset(-1, 0),
           parent: loginControllers[i],
         ),
       );
@@ -97,7 +77,6 @@ class ChangeScreenAnimation {
     for (final controller in [
       topTextController,
       bottomTextController,
-      ...createAccountControllers,
       ...loginControllers,
     ]) {
       controller.dispose();
@@ -111,7 +90,6 @@ class ChangeScreenAnimation {
     await bottomTextController.forward();
 
     for (final controller in [
-      ...createAccountControllers,
       ...loginControllers,
     ]) {
       controller.forward();
@@ -132,7 +110,6 @@ class ChangeScreenAnimation {
 
     for (final controller in [
       ...loginControllers.reversed,
-      ...createAccountControllers.reversed,
     ]) {
       controller.reverse();
       await Future.delayed(const Duration(milliseconds: 100));
