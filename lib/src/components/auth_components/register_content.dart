@@ -12,17 +12,19 @@ enum Screens {
   welcomeBack,
 }
 
-class LoginContent extends StatefulWidget {
-  const LoginContent({Key? key}) : super(key: key);
+class RegisterContent extends StatefulWidget {
+  const RegisterContent({super.key});
 
   @override
-  State<LoginContent> createState() => _LoginContentState();
+  State<RegisterContent> createState() => _RegisterContentState();
 }
 
-class _LoginContentState extends State<LoginContent>
+class _RegisterContentState extends State<RegisterContent>
     with TickerProviderStateMixin {
   late final List<Widget> createAccountContent;
   late final List<Widget> loginContent;
+  late final List<Widget> profileContent;
+  late final List<Widget> passwordContent;
 
   Widget inputField(String hint, IconData iconData) {
     return Padding(
@@ -46,6 +48,69 @@ class _LoginContentState extends State<LoginContent>
               hintText: hint,
               prefixIcon: Icon(iconData),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget multipleLineInputField(String hint, IconData iconData) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
+      child: SizedBox(
+        height: 50,
+        child: Material(
+          elevation: 8,
+          shadowColor: Colors.black87,
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(30),
+          child: TextField(
+            textAlignVertical: TextAlignVertical.bottom,
+            maxLines: null,
+            minLines: 3,
+            keyboardType: TextInputType.multiline,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(30),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              hintText: hint,
+              prefixIcon: Icon(iconData),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget fileInput(String hint, IconData iconData, bool multiple) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
+      child: SizedBox(
+        height: 50,
+        child: ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: const StadiumBorder(),
+            backgroundColor: kContentColorDarkTheme,
+            elevation: 8,
+            shadowColor: Colors.black87,
+          ),
+          child: Wrap(
+            children: <Widget>[
+              Icon(
+                iconData,
+                color: Colors.black38,
+                size: 24.0,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(hint, style: const TextStyle(fontSize: 17, color: Colors.black38))
+            ],
           ),
         ),
       ),
@@ -141,9 +206,24 @@ class _LoginContentState extends State<LoginContent>
   @override
   void initState() {
     createAccountContent = [
-      inputField('Name', Ionicons.person_outline),
+      inputField('First Name', Ionicons.person_outline),
+      inputField('Middle Name', Ionicons.person_outline),
+      inputField('Last Name', Ionicons.person_outline),
       inputField('Email', Ionicons.mail_outline),
+      inputField('Phone Number', Ionicons.cellular_outline),
+      loginButton('Continue'),
+      orDivider(),
+      logos(),
+    ];
+
+    profileContent = [
+      multipleLineInputField("Description", Ionicons.book_outline),
+      fileInput("Profile Image", Ionicons.cloud_upload_outline, false),
+    ];
+
+    passwordContent = [
       inputField('Password', Ionicons.lock_closed_outline),
+      inputField('Confirm Password', Ionicons.lock_closed_outline),
       loginButton('Sign Up'),
       orDivider(),
       logos(),
@@ -158,14 +238,14 @@ class _LoginContentState extends State<LoginContent>
 
     ChangeScreenAnimation.initialize(
       vsync: this,
-      createAccountItems: createAccountContent.length,
+      createAccountItems: profileContent.length,
       loginItems: loginContent.length,
     );
 
-    for (var i = 0; i < createAccountContent.length; i++) {
-      createAccountContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
+    for (var i = 0; i < profileContent.length; i++) {
+      profileContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
         animation: ChangeScreenAnimation.createAccountAnimations[i],
-        child: createAccountContent[i],
+        child: profileContent[i],
       );
     }
 
@@ -202,7 +282,7 @@ class _LoginContentState extends State<LoginContent>
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: createAccountContent,
+                children: profileContent,
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,

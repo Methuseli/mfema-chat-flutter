@@ -4,12 +4,12 @@ import 'package:mfema_chat/src/constants.dart';
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.press,
     this.color = kPrimaryColor,
     this.padding = const EdgeInsets.all(kDefaultPadding * 0.75),
-  }) : super(key: key);
+  });
 
   final String text;
   final VoidCallback press;

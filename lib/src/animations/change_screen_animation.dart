@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:mfema_chat/src/components/login_components/login_content.dart';
+import 'package:mfema_chat/src/components/auth_components/login_content.dart';
 
 class ChangeScreenAnimation {
   static late final AnimationController topTextController;

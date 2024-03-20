@@ -5,9 +5,9 @@ import '../../constants.dart';
 
 class TextMessage extends StatelessWidget {
   const TextMessage({
-    Key? key,
+    super.key,
     this.message,
-  }) : super(key: key);
+  });
 
   final ChatMessage? message;
 

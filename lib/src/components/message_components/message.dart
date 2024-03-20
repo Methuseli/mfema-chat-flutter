@@ -8,9 +8,9 @@ import 'video_message.dart';
 
 class Message extends StatelessWidget {
   const Message({
-    Key? key,
+    super.key,
     required this.message,
-  }) : super(key: key);
+  });
 
   final ChatMessage message;
 
@@ -53,7 +53,7 @@ class Message extends StatelessWidget {
 class MessageStatusDot extends StatelessWidget {
   final MessageStatus? status;
 
-  const MessageStatusDot({Key? key, this.status}) : super(key: key);
+  const MessageStatusDot({super.key, this.status});
   @override
   Widget build(BuildContext context) {
     Color dotColor(MessageStatus status) {

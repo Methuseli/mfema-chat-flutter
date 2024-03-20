@@ -5,10 +5,10 @@ import 'package:mfema_chat/src/constants.dart';
 
 class ChatCard extends StatelessWidget {
   const ChatCard({
-    Key? key,
+    super.key,
     required this.chat,
     required this.press,
-  }) : super(key: key);
+  });
 
   final Chat chat;
   final VoidCallback press;

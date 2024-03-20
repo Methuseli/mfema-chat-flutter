@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../components/message_components/body.dart';
 
 class MessagesScreen extends StatelessWidget {
-  const MessagesScreen({Key? key}) : super(key: key);
+  const MessagesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

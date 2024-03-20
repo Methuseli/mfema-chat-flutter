@@ -5,7 +5,7 @@ import 'package:mfema_chat/src/helper_functions.dart';
 import 'login_content.dart';
 
 class TopText extends StatefulWidget {
-  const TopText({Key? key}) : super(key: key);
+  const TopText({super.key});
 
   @override
   State<TopText> createState() => _TopTextState();
@@ -29,12 +29,13 @@ class _TopTextState extends State<TopText> {
       animation: ChangeScreenAnimation.topTextAnimation,
       child: Text(
         ChangeScreenAnimation.currentScreen == Screens.createAccount
-            ? 'Create\nAccount'
-            : 'Welcome\nBack',
-        style: const TextStyle(
-          fontSize: 40,
-          fontWeight: FontWeight.w600,
-        ),
+            ? 'Create Account'
+            : 'Welcome Back!',
+        textAlign: TextAlign.center,
+        style: Theme.of(context)
+            .textTheme
+            .headlineMedium!
+            .copyWith(fontWeight: FontWeight.w600, color: Colors.blueGrey),
       ),
     );
   }
