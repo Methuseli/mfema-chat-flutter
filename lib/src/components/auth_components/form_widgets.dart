@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mfema_chat/src/constants.dart';
 
-Widget inputField(String hint, IconData iconData, hidden) {
+Widget inputField(String hint, IconData iconData, hidden, validator, onSave) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
     child: SizedBox(
@@ -12,6 +12,8 @@ Widget inputField(String hint, IconData iconData, hidden) {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(30),
         child: TextFormField(
+          validator: validator,
+          onSaved: onSave,
           obscureText: hidden,
           textAlignVertical: TextAlignVertical.bottom,
           decoration: InputDecoration(
@@ -85,7 +87,8 @@ Widget fileInput(String hint, IconData iconData, bool multiple) {
             const SizedBox(
               width: 10,
             ),
-            Text(hint, style: const TextStyle(fontSize: 17, color: Colors.black38))
+            Text(hint,
+                style: const TextStyle(fontSize: 17, color: Colors.black38))
           ],
         ),
       ),
@@ -93,11 +96,11 @@ Widget fileInput(String hint, IconData iconData, bool multiple) {
   );
 }
 
-Widget actionButton(String title) {
+Widget actionButton(String title, Function() onPressed) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 135, vertical: 16),
     child: ElevatedButton(
-      onPressed: () {},
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
         shape: const StadiumBorder(),

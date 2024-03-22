@@ -53,7 +53,7 @@ class LoginScreenAnimation {
       end: const Offset(0, 1.7),
       parent: bottomTextController,
     );
-    print('Log in items $loginItems');
+    // print('Log in items $loginItems');
 
     for (var i = 0; i < loginItems; i++) {
       loginControllers.add(

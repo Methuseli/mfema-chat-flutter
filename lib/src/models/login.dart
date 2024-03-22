@@ -1,5 +1,20 @@
 class Login {
-  final String? email, password;
+  final String email, password;
 
-  Login({this.email, this.password});
+  Login({required this.email, required this.password});
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'username': email.trim(),
+      'password': password.trim(),
+    };
+    return map;
+  }
+}
+
+class LoginResponse {
+  final String? message;
+  final int? statusCode;
+
+  LoginResponse({this.message, this.statusCode});
 }

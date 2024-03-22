@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mfema_chat/src/screens/chats_screen.dart';
 import 'package:mfema_chat/src/screens/welcome_screen.dart';
 import 'package:mfema_chat/src/localization/app_localizations.dart';
+import 'package:mfema_chat/src/services/csrf_service.dart';
+import 'package:mfema_chat/src/state/authentication_bloc.dart';
 
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
@@ -16,6 +20,7 @@ class MyApp extends StatelessWidget {
   });
 
   final SettingsController settingsController;
+  final CsrfService csrfService = CsrfService();
 
   @override
   Widget build(BuildContext context) {
@@ -23,61 +28,92 @@ class MyApp extends StatelessWidget {
     //
     // The ListenableBuilder Widget listens to the SettingsController for changes.
     // Whenever the user updates their settings, the MaterialApp is rebuilt.
+
     return ListenableBuilder(
       listenable: settingsController,
       builder: (BuildContext context, Widget? child) {
-        return MaterialApp(
-          // Providing a restorationScopeId allows the Navigator built by the
-          // MaterialApp to restore the navigation stack when a user leaves and
-          // returns to the app after it has been killed while running in the
-          // background.
-          restorationScopeId: 'app',
+        return FutureBuilder(
+          future: csrfService.getCsrf(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Scaffold(
+                body: Text('Error ${snapshot.error}'),
+              );
+            } else {
+              return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                builder: (context, state) {
+                  if (state is AuthenticationSuccessState) {
+                    // User is authenticated, navigate to home screen
+                    return const ChatsScreen();
+                  } else {
+                    // User is not authenticated, navigate to login screen
+                    // return LoginScreen();
 
-          // Provide the generated AppLocalizations to the MaterialApp. This
-          // allows descendant Widgets to display the correct translations
-          // depending on the user's locale.
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en', ''), // English, no country code
-          ],
+                    return MaterialApp(
+                      // Providing a restorationScopeId allows the Navigator built by the
+                      // MaterialApp to restore the navigation stack when a user leaves and
+                      // returns to the app after it has been killed while running in the
+                      // background.
+                      restorationScopeId: 'app',
 
-          // Use AppLocalizations to configure the correct application title
-          // depending on the user's locale.
-          //
-          // The appTitle is defined in .arb files found in the localization
-          // directory.
-          onGenerateTitle: (BuildContext context) =>
-              AppLocalizations.of(context)!.appTitle,
+                      // Provide the generated AppLocalizations to the MaterialApp. This
+                      // allows descendant Widgets to display the correct translations
+                      // depending on the user's locale.
+                      localizationsDelegates: const [
+                        AppLocalizations.delegate,
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate,
+                        GlobalCupertinoLocalizations.delegate,
+                      ],
+                      supportedLocales: const [
+                        Locale('en', ''), // English, no country code
+                      ],
 
-          // Define a light and dark color theme. Then, read the user's
-          // preferred ThemeMode (light, dark, or system default) from the
-          // SettingsController to display the correct theme.
-          theme: ThemeData(),
-          darkTheme: ThemeData.dark(),
-          themeMode: settingsController.themeMode,
+                      // Use AppLocalizations to configure the correct application title
+                      // depending on the user's locale.
+                      //
+                      // The appTitle is defined in .arb files found in the localization
+                      // directory.
+                      onGenerateTitle: (BuildContext context) =>
+                          AppLocalizations.of(context)!.appTitle,
 
-          // Define a function to handle named routes in order to support
-          // Flutter web url navigation and deep linking.
-          onGenerateRoute: (RouteSettings routeSettings) {
-            return MaterialPageRoute<void>(
-              settings: routeSettings,
-              builder: (BuildContext context) {
-                switch (routeSettings.name) {
-                  case SettingsView.routeName:
-                    return SettingsView(controller: settingsController);
-                  case SampleItemDetailsView.routeName:
-                    return const SampleItemDetailsView();
-                  case SampleItemListView.routeName:
-                  default:
-                    return const WelcomeScreen();
-                }
-              },
-            );
+                      // Define a light and dark color theme. Then, read the user's
+                      // preferred ThemeMode (light, dark, or system default) from the
+                      // SettingsController to display the correct theme.
+                      theme: ThemeData(),
+                      darkTheme: ThemeData.dark(),
+                      themeMode: settingsController.themeMode,
+
+                      // Define a function to handle named routes in order to support
+                      // Flutter web url navigation and deep linking.
+                      onGenerateRoute: (RouteSettings routeSettings) {
+                        return MaterialPageRoute<void>(
+                          settings: routeSettings,
+                          builder: (BuildContext context) {
+                            switch (routeSettings.name) {
+                              case SettingsView.routeName:
+                                return SettingsView(
+                                    controller: settingsController);
+                              case SampleItemDetailsView.routeName:
+                                return const SampleItemDetailsView();
+                              case SampleItemListView.routeName:
+                              default:
+                                return const WelcomeScreen();
+                            }
+                          },
+                        );
+                      },
+                    );
+                  }
+                },
+              );
+            }
           },
         );
       },

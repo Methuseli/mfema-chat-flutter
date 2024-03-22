@@ -1,10 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:mfema_chat/src/forms/form_controller.dart';
 import 'package:mfema_chat/src/helper_functions.dart';
 
 import 'package:mfema_chat/src/constants.dart';
 import 'package:mfema_chat/src/animations/login_screen_animation.dart';
+import 'package:mfema_chat/src/state/authentication_bloc.dart';
 import 'bottom_text.dart';
 import 'top_text.dart';
 import 'form_widgets.dart';
@@ -23,6 +25,10 @@ class LoginContent extends StatefulWidget {
 class _LoginContentState extends State<LoginContent>
     with TickerProviderStateMixin {
   late final List<Widget> loginContent;
+  final Map<String, dynamic> _formData = {
+    'email': '',
+    'password': '',
+  };
 
   Widget orDivider() {
     return Padding(
@@ -87,12 +93,46 @@ class _LoginContentState extends State<LoginContent>
     );
   }
 
+  String? validateEmail(String value) {
+    if (value.isEmpty) {
+      return 'Please enter your email.';
+    }
+    return null;
+  }
+
+  String? validatePassword(String value) {
+    if (value.isEmpty) {
+      return 'Please enter your password.';
+    }
+    return null;
+  }
+
+  void saveEmail(String value) {
+    _formData['email'] = value;
+  }
+
+  void savePassword(String value) {
+    _formData['password'] = value;
+  }
+
+
+  // TO DO
+  // Fix the login service
+
+  void onSubmit() {
+    BlocProvider.of<AuthenticationBloc>(context).add(
+      SignUpUser(_formData['email'], _formData['password']), // Replace with actual email and password
+    );
+  }
+
   @override
   void initState() {
     loginContent = [
-      inputField('Email', Ionicons.mail_outline, false),
-      inputField('Password', Ionicons.lock_closed_outline, true),
-      actionButton('Log In'),
+      inputField(
+          'Email', Ionicons.mail_outline, false, validateEmail, saveEmail),
+      inputField('Password', Ionicons.lock_closed_outline, true,
+          validatePassword, savePassword),
+      actionButton('Log In', onSubmit),
       forgotPassword(),
     ];
 
@@ -117,6 +157,9 @@ class _LoginContentState extends State<LoginContent>
 
     super.dispose();
   }
+
+  late FormController loginFormController = FormController(
+      widgets: loginContent, onValidate: (isValid) {}, onSubmit: (formData) {});
 
   @override
   Widget build(BuildContext context) {
