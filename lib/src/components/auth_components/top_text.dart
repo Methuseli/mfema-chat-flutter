@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mfema_chat/src/helper_functions.dart';
+import 'package:mfema_chat/src/util/helper_functions.dart';
 
 class TopText extends StatefulWidget {
   final Animation<Offset> animation;

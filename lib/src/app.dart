@@ -5,7 +5,7 @@ import 'package:mfema_chat/src/screens/chats_screen.dart';
 import 'package:mfema_chat/src/screens/welcome_screen.dart';
 import 'package:mfema_chat/src/localization/app_localizations.dart';
 import 'package:mfema_chat/src/services/csrf_service.dart';
-import 'package:mfema_chat/src/state/authentication_bloc.dart';
+import 'package:mfema_chat/src/state/authentication/authentication_bloc.dart';
 
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
@@ -13,8 +13,8 @@ import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 
 /// The Widget that configures your application.
-class MyApp extends StatelessWidget {
-  const MyApp({
+class ChatApp extends StatelessWidget {
+   ChatApp({
     super.key,
     required this.settingsController,
   });

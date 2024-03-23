@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:mfema_chat/src/constants.dart';
+import 'package:mfema_chat/src/util/constants.dart';
 
 class ChatInputField extends StatelessWidget {
   const ChatInputField({

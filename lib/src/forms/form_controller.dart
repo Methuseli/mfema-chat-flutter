@@ -13,12 +13,13 @@ class FormController extends StatefulWidget {
 
 class _FormControllerState extends State<FormController> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Map<String, dynamic> formData = {};
+  // Map<String, dynamic> formData = {};
 
   void validateForm() {
     if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
       // Get form data
-      widget.onSubmit(formData); // Pass data to onSubmit callback
+      // widget.onSubmit(formData); // Pass data to onSubmit callback
     } else {
       widget.onValidate(false); // Pass validation result to onValidate callback
     }

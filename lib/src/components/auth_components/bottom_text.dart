@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mfema_chat/src/helper_functions.dart';
+import 'package:mfema_chat/src/util/helper_functions.dart';
 
-import 'package:mfema_chat/src/constants.dart';
+import 'package:mfema_chat/src/util/constants.dart';
 import 'package:mfema_chat/src/screens/login_screen.dart';
 import 'package:mfema_chat/src/screens/registration_screen.dart';
 

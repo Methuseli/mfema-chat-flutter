@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mfema_chat/src/constants.dart';
+import 'package:mfema_chat/src/util/constants.dart';
 
 Widget inputField(String hint, IconData iconData, hidden, validator, onSave) {
   return Padding(

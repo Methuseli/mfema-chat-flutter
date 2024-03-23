@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:mfema_chat/src/forms/form_controller.dart';
-import 'package:mfema_chat/src/helper_functions.dart';
+import 'package:mfema_chat/src/util/helper_functions.dart';
 
-import 'package:mfema_chat/src/constants.dart';
+import 'package:mfema_chat/src/util/constants.dart';
 import 'package:mfema_chat/src/animations/login_screen_animation.dart';
-import 'package:mfema_chat/src/state/authentication_bloc.dart';
+import 'package:mfema_chat/src/state/authentication/authentication_bloc.dart';
 import 'bottom_text.dart';
 import 'top_text.dart';
 import 'form_widgets.dart';

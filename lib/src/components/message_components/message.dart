@@ -1,7 +1,7 @@
 import 'package:mfema_chat/src/models/chat_message.dart';
 import 'package:flutter/material.dart';
 
-import 'package:mfema_chat/src/constants.dart';
+import 'package:mfema_chat/src/util/constants.dart';
 import 'audio_message.dart';
 import 'text_message.dart';
 import 'video_message.dart';

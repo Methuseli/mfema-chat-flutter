@@ -1,7 +1,7 @@
 import 'package:mfema_chat/src/models/chat_message.dart';
 import 'package:flutter/material.dart';
 
-import 'package:mfema_chat/src/constants.dart';
+import 'package:mfema_chat/src/util/constants.dart';
 
 class AudioMessage extends StatelessWidget {
   final ChatMessage? message;
