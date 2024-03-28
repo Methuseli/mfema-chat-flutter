@@ -1,20 +1,12 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ionicons/ionicons.dart';
+import 'package:mfema_chat/src/forms/flutter_form_controller.dart';
+import 'package:mfema_chat/src/forms/registration_form.dart';
+import 'package:mfema_chat/src/screens/login_screen.dart';
 import 'package:mfema_chat/src/state/registration/registration_bloc.dart';
 import 'package:mfema_chat/src/util/constants.dart';
-import 'package:mfema_chat/src/util/helper_functions.dart';
-
-import 'package:mfema_chat/src/animations/registration_screen_animation.dart';
-import 'bottom_text.dart';
-import 'top_text.dart';
-import 'form_widgets.dart';
-
-enum Screens {
-  personalInfo,
-  passwordConfirm,
-  profileInfo,
-}
 
 class RegisterContent extends StatefulWidget {
   const RegisterContent({super.key});
@@ -23,241 +15,141 @@ class RegisterContent extends StatefulWidget {
   State<RegisterContent> createState() => _RegisterContentState();
 }
 
-class _RegisterContentState extends State<RegisterContent>
-    with TickerProviderStateMixin {
-  late final List<Widget> personalInfoContent;
-  late final List<Widget> profileInfoContent;
-  late final List<Widget> passwordConfirmContent;
-  final Map<String, dynamic> _formData = {
-    'firstname': '',
-    'middlename': '',
-    'lastname': '',
-    'email': '',
-    'phoneNumber': '',
-    'password': '',
-    'description': '',
-    'profileImageUrl': '',
-    'roles': [],
-    'username': '',
-  };
+class _RegisterContentState extends State<RegisterContent> {
+  bool _isBlurred = false;
 
-  Widget actionButton(String title, Function(Map<String, dynamic> formData) onPressed) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 135, vertical: 16),
-      child: ElevatedButton(
-        onPressed: () {onPressed(_formData);},
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: const StadiumBorder(),
-          backgroundColor: kSecondaryColor,
-          elevation: 8,
-          shadowColor: Colors.black87,
-        ),
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
+  void onSubmit(Map<String, dynamic> data) {
+    BlocProvider.of<RegistrationBloc>(context).add(SignUpUser(
+        data['email']!,
+        data['password']!,
+        data['username']!,
+        data['firstname']!,
+        data['lastname']!,
+        data['middlename'],
+        data['description'],
+        data['profileImageUrl'],
+        [],
+        data['phoneNumber']));
   }
 
-  Function(String) inputValidation(String field) {
-    return (String value) {
-      if (value.isEmpty) {
-        return 'Please enter your $field';
-      }
-      return null;
-    };
-  }
-
-  Function(String) saveInput(String field) {
-    return (String value) {
-      _formData[field] = value;
-    };
-  }
-
-  String? passwordValidation(String value) {
-    if (value.isEmpty) {
-      return 'Please enter a password';
-    }
-    final hasUppercase = RegExp(r'[A-Z]');
-    final hasLowercase = RegExp(r'[a-z]');
-    final hasNumber = RegExp(r'[0-9]');
-    final hasSpecialCharacters = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
-    if (!(hasUppercase.hasMatch(value) ||
-        hasLowercase.hasMatch(value) ||
-        hasNumber.hasMatch(value) ||
-        hasSpecialCharacters.hasMatch(value) ||
-        value.length >= 8)) {
-      return "Password must have at least one uppercase\n, one lower case\n, one number\n, one special character (!@#\$%^&*(),.?\":{}|<>), \nand must be at least 8 characters!!!";
-    }
-    return null;
-  }
-
-  String? confirmPassword(String value) {
-    if (value != _formData['password']) {
-      return "Password do not match";
-    }
-    return null;
-  }
-
-  void personalInfoContinue() {
-    // if (!RegistrationScreenAnimation.isPlaying) {
-
-    // }
-    if (_formData['firstname'].toString().isNotEmpty &&
-        _formData['middlename'].toString().isNotEmpty &&
-        _formData['lastname'].toString().isNotEmpty &&
-        _formData['email'].toString().isNotEmpty &&
-        _formData['phoneNumber']) {
-      RegistrationScreenAnimation.forward();
-    }
-  }
-
-  void passwordInfoContinue() {
-    RegistrationScreenAnimation.forward();
-  }
-
-  Future<void> submitForms() async {
-    if (_formData['username'].toString().isNotEmpty &&
-        _formData['password'].toString().isNotEmpty) {
-      BlocProvider.of<RegistrationBloc>(context).add(SignUpUser(
-        _formData['email'],
-        _formData['password'],
-        _formData['username'],
-        _formData['firstname'],
-        _formData['lastname'],
-        _formData['middlename'],
-        _formData['description'],
-        _formData['profileImageUrl'],
-        _formData['roles'],
-        _formData['phoneNumber'],
-      ));
-    }
-  }
-
-  @override
-  void initState() {
-    personalInfoContent = [
-      inputField('First Name', Ionicons.person_outline, false,
-          inputValidation('firstname'), saveInput('firstname')),
-      inputField('Middle Name', Ionicons.person_outline, false,
-          inputValidation('middlename'), saveInput('middlename')),
-      inputField('Last Name', Ionicons.person_outline, false,
-          inputValidation('lastname'), saveInput('lastname')),
-      inputField('Email', Ionicons.mail_outline, false,
-          inputValidation('email'), saveInput('email')),
-      inputField('Phone Number', Ionicons.cellular_outline, false,
-          inputValidation('phoneNumber'), saveInput('phoneNumber')),
-      // actionButton('Continue', personalInfoContinue),
-      orDivider(),
-      logos(),
-    ];
-
-    profileInfoContent = [
-      multipleLineInputField("Description", Ionicons.book_outline),
-      fileInput("Profile Image", Ionicons.cloud_upload_outline, false),
-      // actionButton('Register', submitForms),
-    ];
-
-    passwordConfirmContent = [
-      inputField('Username', Ionicons.lock_closed_outline, true,
-          inputValidation('firstname'), saveInput('firstname')),
-      inputField('Password', Ionicons.lock_closed_outline, true,
-          passwordValidation, saveInput('password')),
-      inputField('Confirm Password', Ionicons.lock_closed_outline, true,
-          confirmPassword, saveInput('password')),
-      // actionButton('Continue', passwordInfoContinue),
-    ];
-
-    RegistrationScreenAnimation.initialize(
-      vsync: this,
-      personalInfoItems: personalInfoContent.length,
-      profileInfoItems: profileInfoContent.length,
-      passwordConfirmItems: passwordConfirmContent.length,
-    );
-
-    for (var i = 0; i < personalInfoContent.length; i++) {
-      personalInfoContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
-        animation: RegistrationScreenAnimation.personalInfoAnimations[i],
-        child: personalInfoContent[i],
-      );
-    }
-
-    for (var i = 0; i < profileInfoContent.length; i++) {
-      profileInfoContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
-        animation: RegistrationScreenAnimation.profileInfoAnimations[i],
-        child: profileInfoContent[i],
-      );
-    }
-
-    for (var i = 0; i < passwordConfirmContent.length; i++) {
-      passwordConfirmContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
-        animation: RegistrationScreenAnimation.passwordConfirmAnimations[i],
-        child: passwordConfirmContent[i],
-      );
-    }
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    RegistrationScreenAnimation.dispose();
-
-    super.dispose();
-  }
+  late FormController registrationFormController = FormController(
+      widgets: registrationForm, onValidate: (isValid) {}, onSubmit: onSubmit);
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        child: Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 100, bottom: 50),
-          child: TopText(
-            animation: RegistrationScreenAnimation.topTextAnimation,
-            pageTitle: 'Create Account',
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 50),
-          child: Stack(
+    return BlocProvider<RegistrationBloc>(
+      create: (context) => RegistrationBloc(),
+      child: BlocConsumer<RegistrationBloc, RegistrationState>(
+        listener: (context, state) {
+          if (state is RegistrationLoadingState) {
+            setState(() {
+              _isBlurred = state.isLoading;
+            });
+          } else if (state is RegistrationSuccessState) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return const LoginScreen();
+                },
+              ),
+            );
+          } else if (state is RegistrationFailureState) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Text(state.errorMessage),
+                );
+              },
+            );
+          }
+        },
+        builder: (context, state) {
+          return Stack(
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: personalInfoContent,
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 100, bottom: 5),
+                      child: Text(
+                        'Create Account',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium!
+                            .copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blueGrey,
+                            ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5),
+                      child: registrationFormController,
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 50),
+                        child: GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return const LoginScreen();
+                              },
+                            ),
+                          ),
+                          behavior: HitTestBehavior.opaque,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: RichText(
+                              text: const TextSpan(
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: 'Montserrat',
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: 'Already have an account? ',
+                                      style: TextStyle(
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                        text: 'Log In',
+                                        style: TextStyle(
+                                          color: kSecondaryColor,
+                                          fontWeight: FontWeight.bold,
+                                        ))
+                                  ]),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: passwordConfirmContent,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: profileInfoContent,
-              ),
+              if (_isBlurred)
+                Positioned.fill(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                    child: Container(
+                      color: Colors.black.withOpacity(0.5),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ),
+                ),
             ],
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 50),
-            child: BottomText(
-              animation: RegistrationScreenAnimation.bottomTextAnimation,
-              linkText: 'Login',
-              promptText: 'Already have an account? ',
-              page: 'registration',
-            ),
-          ),
-        ),
-      ],
-    ));
+          );
+        },
+      ),
+    );
   }
 }

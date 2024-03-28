@@ -27,7 +27,7 @@ class User {
       firstname: json['firstname']!,
       middlename: json['middlename'] as String?,
       lastname: json['lastname']!,
-      created: json['created']!,
+      created: DateTime.fromMicrosecondsSinceEpoch((json['created']! * Duration.microsecondsPerSecond).round()),
       roles: json['roles'] != null
           ? (json['roles'] as List)
               .map((roleJson) => Role.fromJson(roleJson))

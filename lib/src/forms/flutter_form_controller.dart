@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:mfema_chat/src/util/constants.dart';
 
@@ -33,16 +32,51 @@ class _FormControllerState extends State<FormController> {
 
   @override
   Widget build(BuildContext context) {
-    return
-      Form(
+
+    return Form(
       key: _formKey,
-      child: ListView(
-        shrinkWrap: true,
+      child: Column(
+        // shrinkWrap: true,
         children: widget.widgets.map((widget) {
           if (widget['type']! == "text") {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
-              child: SizedBox(
+              child: widget['multiline'] ?
+              Material(
+                elevation: 8,
+                shadowColor: Colors.black87,
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(30),
+                child: TextFormField(
+                  maxLines: null,
+                  minLines: 3,
+                  keyboardType: TextInputType.multiline,
+                  validator: (value) {
+                        if (widget["required"]! &&
+                            (value == null || value.isEmpty)) {
+                          return 'Field cannot be empty!';
+                        }
+                        return null;
+                      },
+                  onSaved: (value) {
+                    _formData[widget['name']!] = value!;
+                  },
+                  obscureText: widget['hidden']!,
+                  textAlignVertical: TextAlignVertical.bottom,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    hintText: widget['hint']!,
+                    prefixIcon: Icon(widget['icon']!),
+                  ),
+                ),
+              )
+
+              : SizedBox(
                 height: 50,
                 child: Material(
                   elevation: 8,
@@ -50,18 +84,21 @@ class _FormControllerState extends State<FormController> {
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(30),
                   child: TextFormField(
-                    maxLines: widget['multiline'] ? null : 1,
-                    minLines: widget['multiline'] ? 3 : 1,
-                    keyboardType: widget['multiline']
-                        ? TextInputType.multiline
-                        : TextInputType.text,
-                    validator: (value) {
-                      if (widget["required"]! &&
-                          (value == null || value.isEmpty)) {
-                        return 'Field cannot be empty!';
-                      }
-                      return null;
-                    },
+                    validator: widget['name']! == 'confirmPassword'
+                        ? (value) {
+                            if (value != _formData['password']) {
+                              return "Password do not match";
+                            }
+                            return null;
+                          }
+                        : widget['validator'] ??
+                            (value) {
+                              if (widget["required"]! &&
+                                  (value == null || value.isEmpty)) {
+                                return 'Field cannot be empty!';
+                              }
+                              return null;
+                            },
                     onSaved: (value) {
                       _formData[widget['name']!] = value!;
                     },
@@ -84,13 +121,13 @@ class _FormControllerState extends State<FormController> {
           } else if (widget['type']! == 'button') {
             return Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 135, vertical: 16),
+                  const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
               child: ElevatedButton(
                 onPressed: () {
                   validateForm();
                 },
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 50),
                     shape: const StadiumBorder(),
                     backgroundColor: kSecondaryColor,
                     elevation: 8,
@@ -102,7 +139,58 @@ class _FormControllerState extends State<FormController> {
                 ),
               ),
             ); // Return other widgets (e.g., buttons) as-is
-          } else {
+          } else if (widget['type']! == 'file') {
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 36,
+                vertical: 8,
+              ),
+              child: SizedBox(
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 50),
+                    shape: const StadiumBorder(),
+                    backgroundColor: kContentColorDarkTheme,
+                    elevation: 8,
+                    shadowColor: Colors.black87,
+                  ),
+                  child: Wrap(
+                    children: <Widget>[
+                      Icon(
+                        widget['icon']!,
+                        color: Colors.black38,
+                        size: 24.0,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(widget['hint'],
+                          style: const TextStyle(
+                              fontSize: 17, color: Colors.black38))
+                    ],
+                  ),
+                ),
+              ),
+            );
+          } else if (widget['type'] == 'innerDivider') {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 130, vertical: 8),
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Container(
+                      height: 1,
+                      color: kPrimaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          else {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 130, vertical: 8),
               child: Row(

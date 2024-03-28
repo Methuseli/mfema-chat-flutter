@@ -1,5 +1,8 @@
 
+import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:mfema_chat/src/models/user.dart';
 import 'package:mfema_chat/src/services/registration_service.dart';
 
@@ -17,10 +20,15 @@ class RegistrationBloc extends Bloc<RegistrationEvent, RegistrationState> {
     on<SignUpUser>((event, emit) async {
       emit(RegistrationLoadingState(isLoading: true));
       try {
-        final User? user =
-        await registrationService.register(RegisterUser(username: event.username, email: event.email, password: event.password, firstname: event.firstname, middlename: event.middlename, lastname: event.lastname, roles: event.roles, description: event.description, profileImageUrl: event.profileImageUrl, phoneNumber: event.phoneNumber));
-        if (user != null) {
-          emit(RegistrationSuccessState(user));
+        final http.Response? response = await registrationService.register(RegisterUser(username: event.username, email: event.email, password: event.password, firstname: event.firstname, middlename: event.middlename, lastname: event.lastname, roles: event.roles, description: event.description, profileImageUrl: event.profileImageUrl, phoneNumber: event.phoneNumber));
+        if (response != null) {
+          if (response.statusCode == 200){
+            final User user = User.fromJson(jsonDecode(response.body));
+            emit(RegistrationSuccessState(user));
+          } else {
+            emit(RegistrationFailureState(response.body));
+          }
+
         } else {
           emit(const RegistrationFailureState('Failed to register user'));
         }
