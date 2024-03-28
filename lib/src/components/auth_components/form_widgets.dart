@@ -12,7 +12,7 @@ Widget inputField(String hint, IconData iconData, hidden, validator, onSave) {
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(30),
         child: TextFormField(
-          validator: validator,
+          validator: validator ,
           onSaved: onSave,
           obscureText: hidden,
           textAlignVertical: TextAlignVertical.bottom,
@@ -96,28 +96,28 @@ Widget fileInput(String hint, IconData iconData, bool multiple) {
   );
 }
 
-Widget actionButton(String title, Function() onPressed) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 135, vertical: 16),
-    child: ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: const StadiumBorder(),
-        backgroundColor: kSecondaryColor,
-        elevation: 8,
-        shadowColor: Colors.black87,
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    ),
-  );
-}
+// Widget actionButton(String title, Function(Map<String, String> formData) onPressed) {
+//   return Padding(
+//     padding: const EdgeInsets.symmetric(horizontal: 135, vertical: 16),
+//     child: ElevatedButton(
+//       onPressed: () {onPressed(formData);},
+//       style: ElevatedButton.styleFrom(
+//         padding: const EdgeInsets.symmetric(vertical: 14),
+//         shape: const StadiumBorder(),
+//         backgroundColor: kSecondaryColor,
+//         elevation: 8,
+//         shadowColor: Colors.black87,
+//       ),
+//       child: Text(
+//         title,
+//         style: const TextStyle(
+//           fontSize: 18,
+//           fontWeight: FontWeight.bold,
+//         ),
+//       ),
+//     ),
+//   );
+// }
 
 Widget orDivider() {
   return Padding(

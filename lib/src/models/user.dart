@@ -26,7 +26,7 @@ class User {
       firstname: json['firstname']!,
       middlename: json['middlename'] as String?,
       lastname: json['lastname']!,
-      created: json['created']!,
+      created: DateTime.fromMicrosecondsSinceEpoch((json['created']! * Duration.microsecondsPerSecond).round()),
       roles: json['roles'] != null
           ? (json['roles'] as List)
               .map((roleJson) => Role.fromJson(roleJson))
@@ -40,7 +40,7 @@ class User {
 
 class RegisterUser {
   final String username, email, password, firstname, lastname;
-  final String? middlename, description, profileImageUrl;
+  final String? middlename, description, profileImageUrl, phoneNumber;
   final List<Role> roles;
 
   RegisterUser(
@@ -50,6 +50,7 @@ class RegisterUser {
       required this.firstname,
       this.middlename,
       required this.lastname,
+      this.phoneNumber,
       required this.roles,
       required this.description,
       required this.profileImageUrl});
@@ -62,12 +63,12 @@ class RegisterUser {
       'firstname': firstname,
       'middlename': middlename,
       'lastname': lastname,
+      'phone_number': phoneNumber,
       'roles': roles,
       'description': description,
       'profile_image_url': profileImageUrl,
     };
   }
-
 }
 
 class Role {

@@ -9,11 +9,11 @@ abstract class AuthenticationEvent {
 
 }
 
-class SignUpUser extends AuthenticationEvent {
+class LogInUser extends AuthenticationEvent {
   final String email;
   final String password;
 
-  const SignUpUser(this.email, this.password);
+  const LogInUser(this.email, this.password);
 
   @override
   List<Object> get props => [email, password];

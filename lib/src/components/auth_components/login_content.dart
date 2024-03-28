@@ -1,19 +1,14 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:mfema_chat/src/forms/form_controller.dart';
-import 'package:mfema_chat/src/util/helper_functions.dart';
+import 'package:mfema_chat/src/forms/flutter_form_controller.dart';
+import 'package:mfema_chat/src/forms/login_form.dart';
+import 'package:mfema_chat/src/screens/chats_screen.dart';
+import 'package:mfema_chat/src/screens/registration_screen.dart';
 
 import 'package:mfema_chat/src/util/constants.dart';
-import 'package:mfema_chat/src/animations/login_screen_animation.dart';
 import 'package:mfema_chat/src/state/authentication/authentication_bloc.dart';
-import 'bottom_text.dart';
-import 'top_text.dart';
-import 'form_widgets.dart';
-
-enum Screens {
-  login,
-}
 
 class LoginContent extends StatefulWidget {
   const LoginContent({super.key});
@@ -22,45 +17,8 @@ class LoginContent extends StatefulWidget {
   State<LoginContent> createState() => _LoginContentState();
 }
 
-class _LoginContentState extends State<LoginContent>
-    with TickerProviderStateMixin {
-  late final List<Widget> loginContent;
-  final Map<String, dynamic> _formData = {
-    'email': '',
-    'password': '',
-  };
-
-  Widget orDivider() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 130, vertical: 8),
-      child: Row(
-        children: [
-          Flexible(
-            child: Container(
-              height: 1,
-              color: kPrimaryColor,
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              'or',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Flexible(
-            child: Container(
-              height: 1,
-              color: kPrimaryColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+class _LoginContentState extends State<LoginContent> {
+  bool _isBlurred = false;
 
   Widget logos() {
     return Padding(
@@ -93,110 +51,132 @@ class _LoginContentState extends State<LoginContent>
     );
   }
 
-  String? validateEmail(String value) {
-    if (value.isEmpty) {
-      return 'Please enter your email.';
-    }
-    return null;
-  }
-
-  String? validatePassword(String value) {
-    if (value.isEmpty) {
-      return 'Please enter your password.';
-    }
-    return null;
-  }
-
-  void saveEmail(String value) {
-    _formData['email'] = value;
-  }
-
-  void savePassword(String value) {
-    _formData['password'] = value;
-  }
-
-
-  // TO DO
-  // Fix the login service
-
-  void onSubmit() {
+  void onSubmit(Map<String, dynamic> data) {
     BlocProvider.of<AuthenticationBloc>(context).add(
-      SignUpUser(_formData['email'], _formData['password']), // Replace with actual email and password
+      LogInUser(data['email']!,
+          data['password']!), // Replace with actual email and password
     );
-  }
-
-  @override
-  void initState() {
-    loginContent = [
-      inputField(
-          'Email', Ionicons.mail_outline, false, validateEmail, saveEmail),
-      inputField('Password', Ionicons.lock_closed_outline, true,
-          validatePassword, savePassword),
-      actionButton('Log In', onSubmit),
-      forgotPassword(),
-    ];
-
-    LoginScreenAnimation.initialize(
-      vsync: this,
-      loginItems: loginContent.length,
-    );
-
-    for (var i = 0; i < loginContent.length; i++) {
-      loginContent[i] = HelperFunctions.wrapWithAnimatedBuilder(
-        animation: LoginScreenAnimation.loginAnimations[i],
-        child: loginContent[i],
-      );
-    }
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    LoginScreenAnimation.dispose();
-
-    super.dispose();
   }
 
   late FormController loginFormController = FormController(
-      widgets: loginContent, onValidate: (isValid) {}, onSubmit: (formData) {});
+      widgets: loginForm,
+      onValidate: (isValid) {
+        if (!isValid) {}
+      },
+      onSubmit: onSubmit);
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
+    return BlocConsumer<AuthenticationBloc, AuthenticationState>(
+        listener: (context, state) {
+      if (state is AuthenticationLoadingState) {
+        setState(() {
+          _isBlurred = state.isLoading;
+        });
+      } else if (state is AuthenticationSuccessState) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return const ChatsScreen();
+            },
+          ),
+        );
+      } else if (state is AuthenticationFailureState) {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                content: Text(state.errorMessage),
+              );
+            });
+      }
+    }, builder: (context, state) {
+      return Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 100, bottom: 50),
-            child: TopText(
-              animation: LoginScreenAnimation.topTextAnimation,
-              pageTitle: 'Welcome back!',
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 100, bottom: 50),
+                  child: Text(
+                    'Welcome Back!',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blueGrey,
+                        ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 50),
+                  child: Stack(children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [loginFormController],
+                    )
+                  ]),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 50),
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return const RegisterScreen();
+                          },
+                        ),
+                      ),
+                      behavior: HitTestBehavior.opaque,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: RichText(
+                          text: const TextSpan(
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Montserrat',
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: 'Don\'t have an account? ',
+                                  style: TextStyle(
+                                    color: kPrimaryColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                TextSpan(
+                                    text: 'Sign Up',
+                                    style: TextStyle(
+                                      color: kSecondaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ))
+                              ]),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 50),
-            child: Stack(children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: loginContent,
-              )
-            ]),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 50),
-              child: BottomText(
-                animation: LoginScreenAnimation.bottomTextAnimation,
-                linkText: 'Sign Up',
-                promptText: 'Don\'t have an account? ',
-                page: 'login',
+          if (_isBlurred)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
               ),
             ),
-          ),
         ],
-      ),
-    );
+      );
+    });
   }
 }

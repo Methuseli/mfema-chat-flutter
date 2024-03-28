@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:mfema_chat/src/models/user.dart';
+import 'package:mfema_chat/src/util/constants.dart';
 
 class RegistrationService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
@@ -10,7 +11,7 @@ class RegistrationService {
   final Map<String, String> _cookies = {};
 
   Future<User?> register(RegisterUser user) async {
-    String url = "http://localhost:8080/api/v1/users/signup";
+    String url = "$host$apiVersion/users/signup";
     String? csrfToken = await _secureStorage.read(key: 'csrf');
     String? jwtToken = await _secureStorage.read(key: 'token');
     _cookies['token'] = jwtToken!;

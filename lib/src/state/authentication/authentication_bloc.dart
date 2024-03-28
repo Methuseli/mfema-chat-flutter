@@ -1,5 +1,8 @@
 
+import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
 import 'package:mfema_chat/src/models/user.dart';
 import 'package:mfema_chat/src/models/login.dart';
 
@@ -16,13 +19,19 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
   AuthenticationBloc() : super(AuthenticationInitialState()) {
     on<AuthenticationEvent>((event, emit) {});
 
-    on<SignUpUser>((event, emit) async {
+    on<LogInUser>((event, emit) async {
       emit(AuthenticationLoadingState(isLoading: true));
       try {
-        final User? user =
-        await loginService.login(Login(email: event.email, password: event.password));
-        if (user != null) {
-          emit(AuthenticationSuccessState(user));
+        final http.Response? response = await loginService.login(Login(email: event.email, password: event.password));
+        print('Response $response');
+        if (response != null) {
+          if(response.statusCode == 200) {
+            final User user = User.fromJson(jsonDecode(response.body));
+            emit(AuthenticationSuccessState(user));
+          } else {
+            emit(AuthenticationFailureState(response.body));
+          }
+
         } else {
           emit(const AuthenticationFailureState('Failed to authenticate user'));
         }

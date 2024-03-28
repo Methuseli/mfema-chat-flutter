@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:mfema_chat/src/models/user.dart';
+import 'package:mfema_chat/src/state/registration/registration_bloc.dart';
+import 'package:mfema_chat/src/util/constants.dart';
 import 'package:mfema_chat/src/util/helper_functions.dart';
 
 import 'package:mfema_chat/src/animations/registration_screen_animation.dart';
-import 'package:mfema_chat/src/services/registration_service.dart';
 import 'bottom_text.dart';
 import 'top_text.dart';
 import 'form_widgets.dart';
@@ -27,19 +28,41 @@ class _RegisterContentState extends State<RegisterContent>
   late final List<Widget> personalInfoContent;
   late final List<Widget> profileInfoContent;
   late final List<Widget> passwordConfirmContent;
-  final RegistrationService _registrationService = RegistrationService();
   final Map<String, dynamic> _formData = {
     'firstname': '',
     'middlename': '',
     'lastname': '',
     'email': '',
-    'phone_number': '',
+    'phoneNumber': '',
     'password': '',
     'description': '',
-    'profile_image_url': '',
+    'profileImageUrl': '',
     'roles': [],
     'username': '',
   };
+
+  Widget actionButton(String title, Function(Map<String, dynamic> formData) onPressed) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 135, vertical: 16),
+      child: ElevatedButton(
+        onPressed: () {onPressed(_formData);},
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: const StadiumBorder(),
+          backgroundColor: kSecondaryColor,
+          elevation: 8,
+          shadowColor: Colors.black87,
+        ),
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
 
   Function(String) inputValidation(String field) {
     return (String value) {
@@ -89,7 +112,7 @@ class _RegisterContentState extends State<RegisterContent>
         _formData['middlename'].toString().isNotEmpty &&
         _formData['lastname'].toString().isNotEmpty &&
         _formData['email'].toString().isNotEmpty &&
-        _formData['phone_number']) {
+        _formData['phoneNumber']) {
       RegistrationScreenAnimation.forward();
     }
   }
@@ -101,16 +124,18 @@ class _RegisterContentState extends State<RegisterContent>
   Future<void> submitForms() async {
     if (_formData['username'].toString().isNotEmpty &&
         _formData['password'].toString().isNotEmpty) {
-      RegistrationService registrationService = RegistrationService();
-      await registrationService.register(RegisterUser(
-          username: _formData['username'],
-          email: _formData['email'],
-          password: _formData['password'],
-          firstname: _formData['firstname'],
-          lastname: _formData['lastname'],
-          roles: _formData['roles'],
-          description: _formData['description'],
-          profileImageUrl: _formData['profile_image_url']));
+      BlocProvider.of<RegistrationBloc>(context).add(SignUpUser(
+        _formData['email'],
+        _formData['password'],
+        _formData['username'],
+        _formData['firstname'],
+        _formData['lastname'],
+        _formData['middlename'],
+        _formData['description'],
+        _formData['profileImageUrl'],
+        _formData['roles'],
+        _formData['phoneNumber'],
+      ));
     }
   }
 
@@ -126,8 +151,8 @@ class _RegisterContentState extends State<RegisterContent>
       inputField('Email', Ionicons.mail_outline, false,
           inputValidation('email'), saveInput('email')),
       inputField('Phone Number', Ionicons.cellular_outline, false,
-          inputValidation('phone_number'), saveInput('phone_number')),
-      actionButton('Continue', personalInfoContinue),
+          inputValidation('phoneNumber'), saveInput('phoneNumber')),
+      // actionButton('Continue', personalInfoContinue),
       orDivider(),
       logos(),
     ];
@@ -135,7 +160,7 @@ class _RegisterContentState extends State<RegisterContent>
     profileInfoContent = [
       multipleLineInputField("Description", Ionicons.book_outline),
       fileInput("Profile Image", Ionicons.cloud_upload_outline, false),
-      actionButton('Register', submitForms),
+      // actionButton('Register', submitForms),
     ];
 
     passwordConfirmContent = [
@@ -145,7 +170,7 @@ class _RegisterContentState extends State<RegisterContent>
           passwordValidation, saveInput('password')),
       inputField('Confirm Password', Ionicons.lock_closed_outline, true,
           confirmPassword, saveInput('password')),
-      actionButton('Conitnue', passwordInfoContinue),
+      // actionButton('Continue', passwordInfoContinue),
     ];
 
     RegistrationScreenAnimation.initialize(
